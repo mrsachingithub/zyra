@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex h-full">
+    <!-- Sidebar -->
+    <div class="w-64 bg-black flex-shrink-0 flex flex-col p-6 space-y-6">
+        <div class="flex items-center space-x-2 mb-4">
+            <div
+                class="w-8 h-8 bg-gradient-to-br from-zyra-accent to-purple-600 rounded-full flex items-center justify-center">
+                <span class="font-bold text-white">Z</span>
+            </div>
+            <span class="text-2xl font-bold tracking-tight">Zyra</span>
+        </div>
+
+        <nav class="space-y-4">
+            <a href="#" id="nav-home"
+                class="nav-item flex items-center space-x-4 text-white font-semibold bg-white/10 p-2 rounded transition">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                <span>Home</span>
+            </a>
+            <a href="#" id="nav-search"
+                class="nav-item flex items-center space-x-4 text-zyra-muted hover:text-white transition p-2 rounded hover:bg-white/5">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span>Search</span>
+            </a>
+            <a href="#" id="nav-library"
+                class="nav-item flex items-center space-x-4 text-zyra-muted hover:text-white transition p-2 rounded hover:bg-white/5">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+                <span>Your Library</span>
+            </a>
+        </nav>
+
+        <div class="pt-6 border-t border-gray-800">
+            <a href="#" id="nav-create-playlist"
+                class="flex items-center space-x-4 text-zyra-muted hover:text-white transition mb-4 p-2 rounded hover:bg-white/5">
+                <div
+                    class="w-6 h-6 bg-gray-200 text-black flex items-center justify-center rounded-sm text-xs font-bold">
+                    +</div>
+                <span>Create Playlist</span>
+            </a>
+            <a href="#" id="nav-liked"
+                class="flex items-center space-x-4 text-zyra-muted hover:text-white transition p-2 rounded hover:bg-white/5">
+                <div
+                    class="w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center rounded-sm">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <span>Liked Songs</span>
+            </a>
+        </div>
+
+        <div class="mt-auto">
+            <div class="bg-gray-900 rounded-lg p-4">
+                <p class="text-xs text-zyra-muted uppercase font-bold mb-2">Current Plan</p>
+                <div id="user-plan-badge" class="text-sm font-semibold text-white">Loading...</div>
+                <button id="upgrade-btn"
+                    class="mt-2 w-full py-1 bg-white text-black text-xs font-bold rounded-full hover:scale-105 transition">Upgrade</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 bg-zyra-bg relative overflow-y-auto w-full">
+        <!-- Top Bar -->
+        <header
+            class="sticky top-0 bg-zyra-bg/95 backdrop-blur-md p-4 flex justify-between items-center z-20 transition-all duration-300">
+            <div class="flex space-x-4">
+                <button
+                    class="w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-white cursor-not-allowed border border-white/5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button
+                    class="w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-white cursor-not-allowed border border-white/5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                <!-- Search Bar -->
+                <div class="relative ml-4">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </span>
+                    <input type="text" id="search-input" placeholder="What do you want to play?"
+                        class="pl-10 pr-4 py-2 w-64 rounded-full bg-white text-black focus:outline-none focus:ring-2 focus:ring-white transition-all duration-300">
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="logout-btn"
+                    class="px-4 py-1.5 bg-black/40 rounded-full text-sm font-bold text-white hover:scale-105 border border-white/10 transition">Log
+                    out</button>
+                <div
+                    class="w-8 h-8 bg-zyra-accent rounded-full flex items-center justify-center text-black font-bold select-none cursor-pointer">
+                    U
+                </div>
+            </div>
+        </header>
+
+        <div id="main-view" class="p-8 pb-32">
+            <!-- Greeting -->
+            <h1 class="text-3xl font-bold mb-6">Good evening</h1>
+
+            <!-- Featured Grid (Artist Images) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <!-- Card 1 -->
+                <div
+                    class="bg-white/5 hover:bg-white/10 transition rounded-md flex overflow-hidden cursor-pointer group relative">
+                    <img src="https://images.unsplash.com/photo-1514525253440-b393452e8d26?w=300&h=300&fit=crop"
+                        class="w-20 h-20 object-cover">
+                    <div class="flex-1 p-4 flex items-center justify-between">
+                        <span class="font-bold">Neon Nights</span>
+                        <div
+                            class="play-btn-overlay w-10 h-10 bg-zyra-primary rounded-full flex items-center justify-center shadow-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 absolute right-4">
+                            <svg class="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    class="bg-white/5 hover:bg-white/10 transition rounded-md flex overflow-hidden cursor-pointer group relative">
+                    <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=300&h=300&fit=crop"
+                        class="w-20 h-20 object-cover">
+                    <div class="flex-1 p-4 flex items-center justify-between">
+                        <span class="font-bold">Deep Focus</span>
+                        <div
+                            class="w-10 h-10 bg-zyra-primary rounded-full flex items-center justify-center shadow-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 absolute right-4">
+                            <svg class="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    class="bg-white/5 hover:bg-white/10 transition rounded-md flex overflow-hidden cursor-pointer group relative">
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&h=300&fit=crop"
+                        class="w-20 h-20 object-cover">
+                    <div class="flex-1 p-4 flex items-center justify-between">
+                        <span class="font-bold">Workout Energy</span>
+                        <div
+                            class="w-10 h-10 bg-zyra-primary rounded-full flex items-center justify-center shadow-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 absolute right-4">
+                            <svg class="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Section -->
+            <h2 class="text-2xl font-bold mb-4">Trending Now</h2>
+
+            <div class="bg-[#181818] rounded-xl p-6">
+                <div class="flex border-b border-gray-700 pb-2 mb-4 text-xs text-zyra-muted tracking-wider uppercase">
+                    <div class="w-10">#</div>
+                    <div class="flex-1">Title</div>
+                    <div class="w-1/3">Album</div>
+                    <div class="w-24 text-right">Like</div>
+                    <div class="w-16 text-right"><svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg></div>
+                </div>
+
+                <div id="music-list" class="space-y-2">
+                    <!-- Music items will be injected here via JS -->
+                    <div class="text-center py-10 text-zyra-muted">Loading music...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results View (Hidden by default) -->
+        <div id="search-view" class="hidden p-8 pb-32">
+            <h2 class="text-2xl font-bold mb-4">Search Results</h2>
+            <div id="search-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Search items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Player -->
+    <div
+        class="fixed bottom-0 w-full h-24 bg-[#181818] border-t border-[#282828] px-4 flex items-center justify-between z-50">
+        <!-- Audio Element -->
+        <audio id="audio-player"></audio>
+
+        <!-- Track Info -->
+        <div class="w-1/3 flex items-center space-x-4">
+            <img id="player-cover" src="" class="w-14 h-14 rounded shadow-lg bg-gray-800 hidden object-cover">
+            <div id="player-info" class="hidden">
+                <h4 id="player-title" class="text-sm font-bold hover:underline cursor-pointer text-white"></h4>
+                <p id="player-artist" class="text-xs text-zyra-muted hover:underline cursor-pointer"></p>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="w-1/3 flex flex-col items-center">
+            <div class="flex items-center space-x-6 mb-2">
+                <button id="shuffle-btn" class="text-zyra-muted hover:text-white"><svg class="w-4 h-4"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                            clip-rule="evenodd" />
+                    </svg></button>
+                <button id="prev-btn" class="text-white hover:text-gray-300"><svg class="w-5 h-5" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                            d="M8.445 14.832A1 1 0 0010 14v-2.798l5.445 3.63A1 1 0 0017 14V6a1 1 0 00-1.555-.832L10 8.798V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z" />
+                    </svg></button>
+                <button id="play-pause-btn"
+                    class="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105 transition shadow-lg">
+                    <!-- Dynamic Play/Pause Icon -->
+                    <svg id="play-icon" class="w-5 h-5 text-black ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                    </svg>
+                    <svg id="pause-icon" class="w-5 h-5 text-black hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <button id="next-btn" class="text-white hover:text-gray-300"><svg class="w-5 h-5" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                            d="M4.555 5.168A1 1 0 003 6v8a1 1 0 001.555.832L10 11.202V14a1 1 0 001.555.832l6-4a1 1 0 000-1.664l-6-4A1 1 0 0010 6v2.798l-5.445-3.63z" />
+                    </svg></button>
+                <button id="repeat-btn" class="text-zyra-muted hover:text-white"><svg class="w-4 h-4"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                            clip-rule="evenodd" />
+                    </svg></button>
+            </div>
+            <div class="w-full flex items-center space-x-2 text-xs text-zyra-muted font-mono">
+                <span id="current-time">0:00</span>
+                <input type="range" id="progress-bar" value="0" max="100"
+                    class="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer range-sm">
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <!-- Volume -->
+        <div class="w-1/3 flex justify-end items-center space-x-2">
+            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.972 7.972 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
+            </svg>
+            <input type="range" id="volume-bar" value="100" max="100"
+                class="w-24 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer range-sm">
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal"
+        class="fixed inset-0 bg-black/80 z-[60] hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-zyra-card p-8 rounded-xl max-w-4xl w-full border border-gray-700 relative shadow-2xl">
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2 class="text-3xl font-bold text-center mb-2">Upgrade your Plan</h2>
+            <p class="text-center text-zyra-muted mb-8">Choose the best plan for your music journey.</p>
+
+            <div id="plans-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Plans injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal"
+        class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-[70] backdrop-blur-md">
+        <div class="bg-white text-black rounded-lg p-8 max-w-md w-full relative shadow-2xl">
+            <button id="close-payment" class="absolute top-4 right-4 text-gray-500 hover:text-black">✕</button>
+
+            <div class="mb-6 text-center">
+                <h2 class="text-2xl font-bold mb-1">Secure Payment</h2>
+                <p class="text-sm text-gray-500 flex items-center justify-center gap-1">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Encrypted Connection
+                </p>
+            </div>
+
+            <div class="bg-gray-100 p-4 rounded-md mb-6 flex justify-between items-center">
+                <span class="font-semibold text-gray-700" id="payment-plan-name">Premium Plan</span>
+                <span class="font-bold text-xl text-black" id="payment-plan-price">₹119</span>
+            </div>
+
+            <form id="payment-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Card Number</label>
+                    <div class="relative">
+                        <input type="text" placeholder="0000 0000 0000 0000" maxlength="19"
+                            class="w-full border border-gray-300 rounded p-2 pl-10 focus:outline-none focus:border-black font-mono">
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                            <path fill-rule="evenodd"
+                                d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="flex space-x-4">
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Expiry Date</label>
+                        <input type="text" placeholder="MM / YY" maxlength="5"
+                            class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:border-black font-mono">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">CVC</label>
+                        <div class="relative">
+                            <input type="password" placeholder="123" maxlength="3"
+                                class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:border-black font-mono">
+                            <svg class="w-5 h-5 text-gray-400 absolute right-3 top-2.5" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Cardholder Name</label>
+                    <input type="text" placeholder="SHREYAS VERMA"
+                        class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:border-black uppercase">
+                </div>
+
+                <button type="submit" id="pay-btn"
+                    class="w-full bg-black text-white font-bold py-3 rounded hover:bg-gray-800 transition flex justify-center items-center">
+                    <span>Pay Now</span>
+                </button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
+                    class="h-4 inline mx-1 opacity-50">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
+                    class="h-4 inline mx-1 opacity-50">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+                    class="h-4 inline mx-1 opacity-50">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

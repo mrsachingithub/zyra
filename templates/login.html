@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex-1 flex justify-center items-center bg-zyra-bg">
+    <div class="w-full max-w-md bg-zyra-card p-8 rounded-xl shadow-2xl border border-white/5">
+        <h2 class="text-3xl font-bold text-center mb-8" id="form-title">Log in to Zyra</h2>
+
+        <form id="auth-form" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-zyra-muted mb-1">Username</label>
+                <input type="text" id="username" name="username" required
+                    class="w-full px-4 py-3 bg-[#333] border border-transparent rounded focus:border-zyra-accent focus:bg-[#444] text-white outline-none transition">
+            </div>
+            <div id="email-field" class="hidden">
+                <label class="block text-sm font-medium text-zyra-muted mb-1">Email</label>
+                <input type="email" id="email" name="email"
+                    class="w-full px-4 py-3 bg-[#333] border border-transparent rounded focus:border-zyra-accent focus:bg-[#444] text-white outline-none transition">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-zyra-muted mb-1">Password</label>
+                <input type="password" id="password" name="password" required
+                    class="w-full px-4 py-3 bg-[#333] border border-transparent rounded focus:border-zyra-accent focus:bg-[#444] text-white outline-none transition">
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 bg-zyra-accent text-black font-bold rounded-full hover:scale-105 transform transition">
+                <span id="btn-text">Log In</span>
+            </button>
+        </form>
+
+        <p class="text-center mt-6 text-zyra-muted">
+            <span id="toggle-text">Don't have an account?</span>
+            <button id="toggle-auth" class="text-white hover:underline font-bold ml-1">Sign up for Zyra</button>
+        </p>
+
+        <div id="error-msg" class="mt-4 text-red-500 text-center text-sm hidden"></div>
+        <div id="success-msg" class="mt-4 text-green-500 text-center text-sm hidden"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}
