@@ -41,6 +41,9 @@ def seed():
                 Music(title='Heat Waves', artist='Glass Animals', album='Dreamland', 
                       url='https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', 
                       cover_image='https://i.scdn.co/image/ab67616d0000b273974d9ec55bdf47a1dfa151b6', is_premium=False),
+                Music(title='Love and Obsession', artist='Post Malone', album='International', 
+                      url='https://drive.google.com/uc?export=download&id=1eHGAFYYWRl7VdwT9MfViFG0kxRCLLc7F', 
+                      cover_image='https://drive.google.com/uc?export=download&id=1JoDZ_Mqcpp_Kwu3oV8M447FyZCv_xr1B', is_premium=False)      
             ]
             db.session.bulk_save_objects(music_list)
             print("Music tracks added.")
