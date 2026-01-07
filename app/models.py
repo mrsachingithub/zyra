@@ -18,7 +18,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(255))
     role = db.Column(db.String(20), default='user')
     subscription = db.relationship('Subscription', backref='user', uselist=False, lazy='joined')
     liked_songs = db.relationship('Music', secondary=user_likes, lazy='dynamic', backref=db.backref('liked_by', lazy='dynamic'))
