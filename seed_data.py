@@ -1,11 +1,15 @@
 from app import create_app, db
 from app.models import User, Plan, Music
 from werkzeug.security import generate_password_hash
+import os
 
 app = create_app()
 
 def seed():
     with app.app_context():
+        # Clean Only Zyra Tables (Specific drop instead of drop_all to be safe?)
+        # Actually drop_all in SQLAlchemy only drops tables it knows about (associated with metadata).
+        # Since we prefixed them, it should be fine.
         db.drop_all()
         db.create_all()
         
@@ -21,10 +25,11 @@ def seed():
 
         # 2. Admin User
         if not User.query.filter_by(username='admin').first():
+            admin_pwd = os.environ.get('ADMIN_PASSWORD', 'admin123') # Fallback for local dev if not set
             admin = User(username='admin', email='admin@zyra.com', role='admin')
-            admin.set_password('admin123')
+            admin.set_password(admin_pwd)
             db.session.add(admin)
-            print("Admin user created (admin/admin123).")
+            print(f"Admin user created (admin/{'*' * len(admin_pwd)}).")
 
         # 3. Music
         if not Music.query.first():

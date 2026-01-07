@@ -1,5 +1,4 @@
 __pycache__/
 instance/
-config.py
 .env
 venv/

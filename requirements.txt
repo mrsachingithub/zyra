@@ -10,3 +10,8 @@ werkzeug
 requests
 pytest
 gunicorn
+
+
+mutagen
+psycopg2-binary
+python-dotenv

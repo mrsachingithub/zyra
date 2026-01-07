@@ -3,17 +3,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
 # Association tables
-user_likes = db.Table('user_likes',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('music_id', db.Integer, db.ForeignKey('music.id'), primary_key=True)
+user_likes = db.Table('zyra_user_likes',
+    db.Column('user_id', db.Integer, db.ForeignKey('zyra_user.id'), primary_key=True),
+    db.Column('music_id', db.Integer, db.ForeignKey('zyra_music.id'), primary_key=True)
 )
 
-playlist_songs = db.Table('playlist_songs',
-    db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id'), primary_key=True),
-    db.Column('music_id', db.Integer, db.ForeignKey('music.id'), primary_key=True)
+playlist_songs = db.Table('zyra_playlist_songs',
+    db.Column('playlist_id', db.Integer, db.ForeignKey('zyra_playlist.id'), primary_key=True),
+    db.Column('music_id', db.Integer, db.ForeignKey('zyra_music.id'), primary_key=True)
 )
 
 class User(db.Model):
+    __tablename__ = 'zyra_user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
@@ -39,6 +40,7 @@ class User(db.Model):
         }
 
 class Plan(db.Model):
+    __tablename__ = 'zyra_plan'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, nullable=False)
     price = db.Column(db.Integer, nullable=False)
@@ -55,9 +57,10 @@ class Plan(db.Model):
         }
 
 class Subscription(db.Model):
+    __tablename__ = 'zyra_subscription'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    plan_id = db.Column(db.Integer, db.ForeignKey('plan.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('zyra_user.id'), nullable=False)
+    plan_id = db.Column(db.Integer, db.ForeignKey('zyra_plan.id'), nullable=False)
     start_date = db.Column(db.DateTime, default=datetime.utcnow)
     end_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.String(20), default='active')
@@ -77,9 +80,10 @@ class Subscription(db.Model):
         return self.status == 'active' and self.end_date > datetime.utcnow()
 
 class Playlist(db.Model):
+    __tablename__ = 'zyra_playlist'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('zyra_user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     songs = db.relationship('Music', secondary=playlist_songs, lazy='subquery',
         backref=db.backref('playlists', lazy=True))
@@ -92,9 +96,10 @@ class Playlist(db.Model):
         }
 
 class Payment(db.Model):
+    __tablename__ = 'zyra_payment'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    plan_id = db.Column(db.Integer, db.ForeignKey('plan.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('zyra_user.id'), nullable=False)
+    plan_id = db.Column(db.Integer, db.ForeignKey('zyra_plan.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     currency = db.Column(db.String(3), default='INR')
     status = db.Column(db.String(20), default='completed')
@@ -103,6 +108,7 @@ class Payment(db.Model):
     user = db.relationship('User', backref='payments')
 
 class Music(db.Model):
+    __tablename__ = 'zyra_music'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
     artist = db.Column(db.String(120), nullable=False)

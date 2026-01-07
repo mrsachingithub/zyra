@@ -72,10 +72,90 @@ def add_music_tracks():
             'title': 'Chaiyya Chaiyya', 'artist': 'Sukhwinder Singh', 
             'album': 'Dil Se', 'url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
             'cover_image': 'https://c.saavncdn.com/492/Dil-Se-Hindi-1998-20190603125213-500x500.jpg', 'is_premium': False, 'genre': 'Bollywood'
+        },
+        {
+            'title': 'Chaleya', 'artist': 'Arijit Singh', 
+            'album': 'Jawan', 'url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',
+            'cover_image': 'https://c.saavncdn.com/026/Chaleya-From-Jawan-Hindi-2023-20230814104054-500x500.jpg', 'is_premium': False, 'genre': 'Bollywood'
         }
     ]
 
     with app.app_context():
+        # Scan local static/music directory
+        import os
+        import random
+        from mutagen import File
+        from mutagen.id3 import ID3, APIC
+        
+        local_music_dir = os.path.join(os.getcwd(), 'static', 'music')
+        covers_dir = os.path.join(os.getcwd(), 'static', 'covers')
+        if not os.path.exists(covers_dir):
+            os.makedirs(covers_dir)
+
+        if os.path.exists(local_music_dir):
+            for filename in os.listdir(local_music_dir):
+                if filename.lower().endswith(('.mp3', '.wav', '.ogg')):
+                    file_path = os.path.join(local_music_dir, filename)
+                    
+                    # 1. Parse Filename: Title_-_Artist.mp3
+                    # Replace underscores with spaces
+                    clean_name = os.path.splitext(filename)[0]
+                    
+                    title = clean_name
+                    artist = "Unknown Artist"
+                    
+                    if '_-_' in clean_name:
+                        parts = clean_name.split('_-_', 1)
+                        title = parts[0].replace('_', ' ').strip()
+                        artist = parts[1].replace('_', ' ').strip()
+                    else:
+                        # Fallback if no separator found, just replace underscores
+                        title = clean_name.replace('_', ' ')
+
+                    # 2. Extract Embedded Cover Art using Mutagen
+                    cover_image_url = 'https://placehold.co/500x500?text=Music' # Default
+                    
+                    try:
+                        audio = File(file_path)
+                        if audio and audio.tags:
+                            # Look for APIC frame (ID3v2)
+                            for tag in audio.tags.values():
+                                if isinstance(tag, APIC):
+                                    image_data = tag.data
+                                    mime = tag.mime
+                                    ext = 'jpg' if 'jpeg' in mime else 'png'
+                                    
+                                    # Create safe filename for cover
+                                    safe_title = "".join(x for x in title if x.isalnum())
+                                    cover_filename = f"{safe_title}_{int(os.path.getmtime(file_path))}.{ext}"
+                                    cover_path = os.path.join(covers_dir, cover_filename)
+                                    
+                                    with open(cover_path, 'wb') as img_file:
+                                        img_file.write(image_data)
+                                    
+                                    cover_image_url = f'/static/covers/{cover_filename}'
+                                    # print(f"Extracted cover for {filename}")
+                                    break
+                    except Exception as e:
+                        print(f"Could not extract metadata for {filename}: {e}")
+
+                    # URL for static file
+                    url = f'/static/music/{filename}'
+                    
+                    # Random Premium Status (approx 30% chance)
+                    is_premium = random.choice([True, False, False])
+
+                    tracks_to_add.append({
+                        'title': title,
+                        'artist': artist,
+                        'album': 'Local Uploads',
+                        'url': url,
+                        'cover_image': cover_image_url,
+                        'is_premium': is_premium,
+                        'genre': 'Local'
+                    })
+                    print(f"Found local file: {title} by {artist} (Premium: {is_premium})")
+
         added_count = 0
         for track_data in tracks_to_add:
             # Check if track already exists by title and artist

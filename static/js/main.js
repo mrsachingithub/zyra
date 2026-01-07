@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dashboard Load
     if (window.location.pathname === '/dashboard') {
-        loadMusic();
+        renderHomeContent();
         loadUserPlan();
         loadLikedSongs();
         setupPlayerListeners();
@@ -110,43 +110,17 @@ function setupNavigation() {
     });
 }
 
-function renderHomeContent() {
+async function renderHomeContent() {
     const mainView = document.getElementById('main-view');
     mainView.innerHTML = `
         <h1 class="text-3xl font-bold mb-6">Good evening</h1>
         
         <!-- Featured Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-             <!-- Card 1 -->
-                <div class="bg-white/5 hover:bg-white/10 transition rounded-md flex overflow-hidden cursor-pointer group relative">
-                    <img src="https://images.unsplash.com/photo-1514525253440-b393452e8d26?w=300&h=300&fit=crop" class="w-20 h-20 object-cover">
-                    <div class="flex-1 p-4 flex items-center justify-between">
-                        <span class="font-bold">Neon Nights</span>
-                        <div class="play-btn-overlay w-10 h-10 bg-zyra-primary rounded-full flex items-center justify-center shadow-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 absolute right-4">
-                            <svg class="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-white/5 hover:bg-white/10 transition rounded-md flex overflow-hidden cursor-pointer group relative">
-                     <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=300&h=300&fit=crop" class="w-20 h-20 object-cover">
-                    <div class="flex-1 p-4 flex items-center justify-between">
-                        <span class="font-bold">Deep Focus</span>
-                        <div class="w-10 h-10 bg-zyra-primary rounded-full flex items-center justify-center shadow-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 absolute right-4">
-                            <svg class="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card 3 -->
-                 <div class="bg-white/5 hover:bg-white/10 transition rounded-md flex overflow-hidden cursor-pointer group relative">
-                     <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&h=300&fit=crop" class="w-20 h-20 object-cover">
-                    <div class="flex-1 p-4 flex items-center justify-between">
-                        <span class="font-bold">Workout Energy</span>
-                        <div class="w-10 h-10 bg-zyra-primary rounded-full flex items-center justify-center shadow-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 absolute right-4">
-                            <svg class="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
-                        </div>
-                    </div>
-                </div>
+        <div id="featured-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <!-- Loading placeholders... -->
+             <div class="bg-white/5 h-20 rounded-md animate-pulse"></div>
+             <div class="bg-white/5 h-20 rounded-md animate-pulse"></div>
+             <div class="bg-white/5 h-20 rounded-md animate-pulse"></div>
         </div>
 
         <!-- Trending Section -->
@@ -166,7 +140,39 @@ function renderHomeContent() {
             </div>
         </div>
     `;
-    loadMusic(); // Reload music list into the new container
+
+    try {
+        const musicList = await loadMusic(); // loadMusic now returns the list
+
+        // Render Featured Grid (Random 3)
+        if (musicList && musicList.length > 0) {
+            const featuredContainer = document.getElementById('featured-grid');
+            featuredContainer.innerHTML = '';
+
+            // Shuffle and pick 3
+            const shuffled = [...musicList].sort(() => 0.5 - Math.random());
+            const featured = shuffled.slice(0, 3);
+
+            featured.forEach(track => {
+                const el = document.createElement('div');
+                el.className = 'bg-white/5 hover:bg-white/10 transition rounded-md flex overflow-hidden cursor-pointer group relative';
+                el.innerHTML = `
+                    <img src="${track.cover_image || 'https://via.placeholder.com/80'}" class="w-20 h-20 object-cover">
+                    <div class="flex-1 p-4 flex items-center justify-between">
+                        <span class="font-bold truncate pr-2">${track.title}</span>
+                         <div class="play-btn-overlay w-10 h-10 bg-zyra-primary rounded-full flex items-center justify-center shadow-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 absolute right-4">
+                            <svg class="w-5 h-5 text-black ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+                        </div>
+                    </div>
+                `;
+                el.onclick = () => playTrack(track);
+                featuredContainer.appendChild(el);
+            });
+        }
+
+    } catch (e) {
+        console.error("Error rendering home:", e);
+    }
 }
 
 async function showLikedSongsView() {
@@ -341,8 +347,10 @@ async function loadMusic() {
         const res = await fetchWithAuth('/api/music');
         const musicList = await res.json();
         renderMusicList(musicList, document.getElementById('music-list'), false);
+        return musicList; // Return for other uses
     } catch (err) {
         console.error(err);
+        return [];
     }
 }
 
