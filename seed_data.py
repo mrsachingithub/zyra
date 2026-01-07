@@ -7,11 +7,9 @@ app = create_app()
 
 def seed():
     with app.app_context():
-        # Clean Only Zyra Tables (Specific drop instead of drop_all to be safe?)
-        # Actually drop_all in SQLAlchemy only drops tables it knows about (associated with metadata).
-        # Since we prefixed them, it should be fine.
-        db.drop_all()
-        db.create_all()
+        # db.drop_all() and db.create_all() are REMOVED.
+        # We rely on Flask-Migrate for table creation.
+        # This script now only adds data if it's missing (Safe to run on every deploy).
         
         # 1. Plans
         if not Plan.query.first():
