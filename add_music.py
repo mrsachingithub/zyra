@@ -127,7 +127,7 @@ def add_music_tracks():
                                     
                                     # Create safe filename for cover
                                     safe_title = "".join(x for x in title if x.isalnum())
-                                    cover_filename = f"{safe_title}_{int(os.path.getmtime(file_path))}.{ext}"
+                                    cover_filename = f"{safe_title}.{ext}"
                                     cover_path = os.path.join(covers_dir, cover_filename)
                                     
                                     with open(cover_path, 'wb') as img_file:
