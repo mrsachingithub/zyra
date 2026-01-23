@@ -290,6 +290,7 @@ function togglePlay() {
         isPlaying = false;
     }
     updatePlayButton();
+    updatePlaylistHighlight();
 }
 
 function updatePlayButton() {
@@ -391,12 +392,12 @@ function renderMusicList(list, container, asCards) {
             const el = document.createElement('div');
             el.className = 'flex items-center p-3 rounded-md hover:bg-white/10 transition group cursor-pointer';
             el.innerHTML = `
-                <div class="w-10 text-zyra-muted group-hover:text-white">${index + 1}</div>
+                <div class="w-10 text-zyra-muted group-hover:text-white index-col" data-index="${index + 1}">${index + 1}</div>
                 <div class="flex-1 flex items-center space-x-4">
                     <img src="${track.cover_image || 'https://via.placeholder.com/40'}" class="w-10 h-10 bg-gray-700 object-cover">
-                    <div>
-                        <div class="font-bold text-white">${track.title}</div>
-                        <div class="text-sm text-zyra-muted">${track.artist}</div>
+                    <div class="track-info">
+                        <div class="font-bold text-white track-title">${track.title}</div>
+                        <div class="text-sm text-zyra-muted track-artist">${track.artist}</div>
                     </div>
                 </div>
                 <div class="w-1/3 text-sm text-zyra-muted hidden md:block">${track.album || 'Single'}</div>
@@ -411,9 +412,21 @@ function renderMusicList(list, container, asCards) {
             `;
 
             // Interaction handlers
+            el.setAttribute('data-track-id', track.id);
             el.onclick = (e) => {
                 if (!e.target.closest('.like-btn')) playTrack(track);
             };
+
+            // Check if this track is currently playing to set initial state
+            if (currentTrack && currentTrack.id === track.id) {
+                el.classList.add('bg-white/10');
+                el.querySelector('.track-title').classList.add('text-green-500');
+                if (isPlaying) {
+                    el.querySelector('.index-col').innerHTML = '<svg class="w-4 h-4 text-green-500 animate-pulse" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>';
+                } else {
+                    el.querySelector('.index-col').classList.add('text-green-500');
+                }
+            }
 
             const likeBtn = el.querySelector('.like-btn');
             likeBtn.onclick = async (e) => {
@@ -564,6 +577,41 @@ function playTrack(track) {
     audioPlayer.play().catch(e => console.log('Playback error:', e)); // Handle autoplay policies
     isPlaying = true;
     updatePlayButton();
+    updatePlaylistHighlight();
+}
+
+function updatePlaylistHighlight() {
+    // Clear previous highlights
+    document.querySelectorAll('[data-track-id]').forEach(el => {
+        el.classList.remove('bg-white/10');
+        const title = el.querySelector('.track-title');
+        if (title) title.classList.remove('text-green-500');
+
+        const indexCol = el.querySelector('.index-col');
+        if (indexCol) {
+            indexCol.classList.remove('text-green-500');
+            indexCol.innerHTML = indexCol.dataset.index; // Restore number
+        }
+    });
+
+    if (!currentTrack) return;
+
+    // Highlight new track
+    const activeEls = document.querySelectorAll(`[data-track-id="${currentTrack.id}"]`);
+    activeEls.forEach(el => {
+        el.classList.add('bg-white/10');
+        const title = el.querySelector('.track-title');
+        if (title) title.classList.add('text-green-500');
+
+        const indexCol = el.querySelector('.index-col');
+        if (indexCol) {
+            if (isPlaying) {
+                indexCol.innerHTML = '<svg class="w-4 h-4 text-green-500 animate-pulse" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>';
+            } else {
+                indexCol.classList.add('text-green-500'); // Just green number if paused
+            }
+        }
+    });
 }
 
 async function fetchWithAuth(url, options = {}) {
